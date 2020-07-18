@@ -17,11 +17,11 @@ export  default function Form() {
     const [user, setUser] = useState(defaultState);
     const [errors, setErrors] = useState({...defaultState});
     const [disableButton, setDisableButton] = useState(true);
-    const size = [6, 10, 12, 16];
+    const size = ['6', '10', '12', '16'];
 
     let formSchema = yup.object().shape({
         name: yup.string().required('Please tell us your name').min(2, 'Names must be at least 2 letters'),
-        size: yup.number().required('Choose a size').oneOf(size, 'Choose a size'),
+        size: yup.string().required('Choose a size').oneOf(size, 'Choose a size'),
         pepperoni: yup.boolean(),
         peppers: yup.boolean(),
         sausage: yup.boolean(),
@@ -82,12 +82,13 @@ export  default function Form() {
                 </label>
                 <label htmlFor='size'>
                     Pizza Size:
-                    <select data-cy='size-fld' name='size' onChange={handleChange} value={user.size}>
+                    <select data-cy='size-fld' name='size' onChange={handleChange} value={user.size} errors={errors}>
                         <option value=''>Choose a size:</option>
                         {size.map((s, i) => 
                             <option value={s} key={i}>{s}</option>
                         )}
                     </select>
+                    {errors.size.length > 0 ? <p data-cy='size-err'>{errors.size}</p> : ''}
                 </label>
                 <label htmlFor='pepperoni'>
                     Pepperoni:
