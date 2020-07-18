@@ -5,15 +5,26 @@ import * as yup from 'yup';
 
 export  default function Form() {
     const defaultState = {
-        name: ''
+        name: '',
+        size: '',
+        pepperoni: 0,
+        peppers: 0,
+        sausage: 0,
+        pineapple: 0
     }
 
     const [user, setUser] = useState(defaultState);
     const [errors, setErrors] = useState({...defaultState});
     const [disableButton, setDisableButton] = useState(true);
+    const size = [6, 10, 12, 16];
 
     let formSchema = yup.object().shape({
         name: yup.string().required('Please tell us your name').min(2, 'Names must be at least 2 letters'),
+        size: yup.number().required('Choose a size').oneOf(size, 'Choose a size'),
+        // pepperoni: yup.bool().nullable(true),
+        // peppers: yup.bool().nullable(true),
+        // sausage: yup.bool().nullable(true),
+        // pineapple: yup.bool().nullable(true)
     });
 
     const validateChange = event => {
@@ -40,9 +51,11 @@ export  default function Form() {
     }, [formSchema, user]);
 
     const handleChange = event => {
+        const targetValue =
+        event.target.type === 'checkbox' ? event.target.checked : event.target.value;
         setUser({
             ...user,
-            [event.target.name]: event.target.value
+            [event.target.name]: targetValue
         });
         validateChange(event);
     }
@@ -62,9 +75,34 @@ export  default function Form() {
             <form onSubmit={handleSubmit}>
                 <label htmlFor='name'>
                     Name:
-                    <input data-cy='name-fld' type='text' name='name' onChange={handleChange} errors={errors} />
+                    <input data-cy='name-fld' type='text' name='name' onChange={handleChange} value={user.name} errors={errors} />
                     {errors.name.length > 0 ? <p data-cy='name-err'>{errors.name}</p> : ''} 
                 </label>
+                <label htmlFor='size'>
+                    Pizza Size:
+                    <select data-cy='size-fld' name='size' onChange={handleChange} value={user.size}>
+                        <option value=''>Choose a size:</option>
+                        {size.map((s, i) => 
+                            <option value={s} key={i}>{s}</option>
+                        )}
+                    </select>
+                </label>
+                    <label htmlFor='pepperoni'>
+                        Pepperoni:
+                        <input data-cy='pepperoni-fld' type='checkbox' value={user.pepperoni} onChange={handleChange} checked={user.pepperoni} />
+                    </label>
+                    <label htmlFor='pepperoni'>
+                        Peppers:
+                        <input data-cy='peppers-fld' type='checkbox' value={user.peppers} onChange={handleChange} checked={user.peppers} />
+                    </label>
+                    <label htmlFor='sausage'>
+                        Sausage:
+                        <input data-cy='sausage-fld' type='checkbox' value={user.sausage} onChange={handleChange} checked={user.sausage} />
+                    </label>
+                    <label htmlFor='pineapple'>
+                        Pineapple:
+                        <input data-cy='pineapple-fld' type='checkbox' value={user.pineapple} onChange={handleChange} checked={user.pineapple} />
+                    </label>
                 <button data-cy='order-btn' disabled={disableButton}>Add to Order</button>
             </form>
             <Route path='/pizza' component={Pizza} />
